@@ -20,12 +20,12 @@ class FixPriceSpider(scrapy.Spider):
     }
 
     def parse(self, response):
-        # Получаем ссылки на страницы товаров
+        # Cсылки на страницы товаров
         product_links = response.css('a.title::attr(href)').getall()
         for link in product_links:
             yield response.follow('https://fix-price.com' + link, self.parse_product)
 
-        # Пагинация (навигация между страницами категорий)
+        # Пагинация
         next_page = response.css('a.button.next::attr(href)').get()
         if next_page:
             yield response.follow('https://fix-price.com' + next_page, self.parse)
@@ -47,7 +47,7 @@ class FixPriceSpider(scrapy.Spider):
             },
             "stock": {
                 "in_stock": 'Нет в наличии' not in response.text,
-                "count": 0  # Здесь можно добавить более точный парсинг, если доступно
+                "count": 0 
             },
             "assets": {
                 "main_image": response.css('div.main-image img::attr(src)').get(),
@@ -61,7 +61,7 @@ class FixPriceSpider(scrapy.Spider):
 
     def parse_title(self, response):
         title = response.css('h1.product-title::text').get()
-        # Пример: если есть цвет или объем, добавляем их в название
+        # Если есть цвет или объем, добавляем их в название
         additional_info = response.css('div.product-info span::text').getall()
         return f"{title}, {' '.join(additional_info)}"
 
@@ -78,7 +78,7 @@ class FixPriceSpider(scrapy.Spider):
         return ''
 
     def parse_metadata(self, response):
-        # Пример извлечения характеристик товара
+        # Извлечения характеристик товара
         metadata = {}
         characteristics = response.css('div.characteristics table tr')
         for char in characteristics:
